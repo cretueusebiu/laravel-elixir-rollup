@@ -31,6 +31,11 @@ Elixir.extend('rollup', function (src, output, options) {
         this.log(paths.src, paths.output);
 
         return rollup(options)
+            .on('error', function (e) {
+                new Elixir.Notification().error(e, 'Rollup Failed!');
+
+                this.emit('end');
+            })
             .pipe(source(paths.src.name, paths.src.path))
             .pipe(buffer())
             .pipe(Elixir.Plugins.if(config.production, Elixir.Plugins.uglify()))
