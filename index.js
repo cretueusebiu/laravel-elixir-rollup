@@ -43,7 +43,7 @@ Elixir.extend('rollup', function (src, output, options) {
             .pipe(gulp.dest(paths.output.baseDir))
             .pipe(new Elixir.Notification('Rollup Compiled!'));
     })
-    .watch(paths.src.path)
+    .watch(paths.src.baseDir + '/**/*.js')
     .ignore(paths.output.path);
 });
 
