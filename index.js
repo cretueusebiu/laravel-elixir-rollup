@@ -6,16 +6,23 @@ var rollup = require('rollup-stream');
 var Elixir = require('laravel-elixir');
 var babel = require('rollup-plugin-babel');
 var source = require('vinyl-source-stream');
+var config = Elixir.config;
+var plugins = Elixir.Plugins;
 
 /**
  * Rollup Task.
  *
- * @param  {String} src
- * @param  {String} output
- * @param  {Object} options
+ * @param {String} src
+ * @param {String} output
+ * @param {Object} options
  */
 Elixir.extend('rollup', function (src, output, options) {
     var paths = prepGulpPaths(src, output);
+    var sourceMapFile = options ? options.sourceMapFile : false;
+
+    if (options) {
+        delete options.sourceMapFile;
+    }
 
     options = _.extend({
         entry: paths.src.path,
@@ -24,7 +31,7 @@ Elixir.extend('rollup', function (src, output, options) {
             babel({
                 presets:  ['es2015-rollup']
             })
-        ],
+        ]
     }, options);
 
     new Elixir.Task('rollup', function () {
@@ -33,13 +40,14 @@ Elixir.extend('rollup', function (src, output, options) {
         return rollup(options)
             .on('error', function (e) {
                 new Elixir.Notification().error(e, 'Rollup Failed!');
-
                 this.emit('end');
             })
             .pipe(source(paths.src.name, paths.src.path))
             .pipe(buffer())
-            .pipe(Elixir.Plugins.if(config.production, Elixir.Plugins.uglify()))
+            .pipe(plugins.if(config.production, plugins.uglify()))
             .pipe(rename(paths.output.name))
+            .pipe(plugins.if(sourceMapFile, plugins.sourcemaps.init({loadMaps: true})))
+            .pipe(plugins.if(sourceMapFile, plugins.sourcemaps.write('.')))
             .pipe(gulp.dest(paths.output.baseDir))
             .pipe(new Elixir.Notification('Rollup Compiled!'));
     })
