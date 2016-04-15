@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-var _ = require('underscore');
 var rename = require('gulp-rename');
 var buffer = require('vinyl-buffer');
 var rollup = require('rollup-stream');
@@ -19,19 +18,25 @@ var plugins = Elixir.Plugins;
 Elixir.extend('rollup', function (src, output, options) {
     var paths = prepGulpPaths(src, output);
     var sourceMapFile = options ? options.sourceMapFile : false;
+    var includeHelpers = options ? (options.hasOwnProperty('includeHelpers') ? options.includeHelpers : true) : true;
 
     if (options) {
         delete options.sourceMapFile;
+        delete options.includeHelpers;
     }
 
-    options = _.extend({
+    var babelOptions = {presets: ['es2015-rollup']};
+
+    if (!includeHelpers) {
+        babelOptions.externalHelpers = true;
+        babelOptions.plugins = babelOptions.plugins || [];
+        babelOptions.plugins.push('external-helpers-2');
+    }
+
+    options = Object.assign({}, {
         entry: paths.src.path,
         sourceMap: config.sourcemaps,
-        plugins: [
-            babel({
-                presets:  ['es2015-rollup']
-            })
-        ]
+        plugins: [babel(babelOptions)]
     }, options);
 
     new Elixir.Task('rollup', function () {
