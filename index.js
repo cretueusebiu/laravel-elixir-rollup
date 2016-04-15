@@ -16,9 +16,11 @@ var plugins = Elixir.Plugins;
  * @param {Object} options
  */
 Elixir.extend('rollup', function (src, output, options) {
+    options = Object.assign({}, options || {});
+
     var paths = prepGulpPaths(src, output);
-    var sourceMapFile = options ? options.sourceMapFile : false;
-    var includeHelpers = options ? (options.hasOwnProperty('includeHelpers') ? options.includeHelpers : true) : true;
+    var sourceMapFile = options.sourceMapFile;
+    var includeHelpers = options.includeHelpers;
 
     if (options) {
         delete options.sourceMapFile;
