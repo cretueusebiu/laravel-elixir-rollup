@@ -29,8 +29,8 @@ Elixir.extend('rollup', function (src, output, options) {
 
     if (!includeHelpers) {
         babelOptions.externalHelpers = true;
-        babelOptions.plugins = babelOptions.plugins || [];
-        babelOptions.plugins.push('external-helpers-2');
+        babelOptions.plugins = config.js.babel.options.plugins || [];
+        babelOptions.plugins.push('external-helpers-2', 'transform-object-assign');
     }
 
     options = Object.assign({}, {
