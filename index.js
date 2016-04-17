@@ -27,12 +27,12 @@ Elixir.extend('rollup', function (src, output, options) {
         delete options.includeHelpers;
     }
 
-    var babelOptions = {presets: ['es2015-rollup']};
+    var babelOptions = {presets: [require('babel-preset-es2015-rollup')]};
 
     if (!includeHelpers) {
         babelOptions.externalHelpers = true;
         babelOptions.plugins = config.js.babel.options.plugins || [];
-        babelOptions.plugins.push('external-helpers-2', 'transform-object-assign');
+        babelOptions.plugins.push(require('babel-plugin-external-helpers-2'), require('babel-plugin-transform-object-assign'));
     }
 
     options = Object.assign({}, {

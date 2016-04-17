@@ -1,6 +1,6 @@
 {
   "name": "laravel-elixir-rollup",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Laravel Elixir Rollup Extension",
   "main": "index.js",
   "scripts": {
